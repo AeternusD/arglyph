@@ -26,3 +26,9 @@ packages = ["arglyph"]
 [tool.setuptools.package-data]
 # Empaqueta los YAML de la base de conocimiento junto al codigo.
 arglyph = ["kb/*.yaml"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+    "ruff>=0.16.9",
+]
