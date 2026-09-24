@@ -1,0 +1,102 @@
+# Base de conocimiento de ffuf (Fuzz Faster U Fool) para arglyph.
+name: ffuf
+summary: "Fuzzer web rapido: descubre rutas, archivos, parametros y usuarios por fuerza bruta."
+description: >-
+  Sustituye muchos usos de Burp Intruder (que en la version Community va lento).
+  La idea: pones el marcador FUZZ donde quieras probar, le das un diccionario y
+  ffuf lanza una peticion por cada palabra.
+url: "https://github.com/ffuf/ffuf"
+
+flags:
+  "-w":
+    takes_value: true
+    title: "Wordlist (diccionario)"
+    what: "El archivo con las palabras que se probaran, una por linea."
+    why: "Es la munición del fuzzing. Sin diccionario no hay nada que probar."
+    pro: "Puedes nombrar la lista: -w users.txt:USER y usar USER como marcador. Utiles para multiples puntos."
+
+  "-u":
+    takes_value: true
+    title: "URL objetivo"
+    what: "La URL a atacar. Donde pongas FUZZ es donde ffuf inyecta cada palabra."
+    why: "Define el punto exacto de fuzzing: ruta (/FUZZ), subdominio, parametro (?id=FUZZ), etc."
+
+  "-H":
+    takes_value: true
+    title: "Cabecera HTTP personalizada"
+    what: "Añade o reemplaza una cabecera en cada peticion."
+    why: >-
+      Imprescindible para autenticarte (Cookie, Authorization), fingir otro
+      host (Host: FUZZ para fuzzing de vhosts) o evadir filtros (X-Forwarded-For).
+    pro: "Se puede repetir varias veces. Tambien sirve FUZZ dentro del valor de la cabecera."
+
+  "-X":
+    takes_value: true
+    title: "Metodo HTTP"
+    what: "Cambia el metodo (GET por defecto) a POST, PUT, etc."
+    why: "Muchos endpoints (logins, APIs) solo responden a POST."
+
+  "-d":
+    takes_value: true
+    title: "Cuerpo (data) de la peticion"
+    what: "El body que se envia, tipico en POST. FUZZ tambien funciona aqui."
+    why: "Para fuzzear campos de formularios: -d 'user=admin&pass=FUZZ'."
+
+  "-mc":
+    takes_value: true
+    title: "Match: codigos de estado a mostrar"
+    what: "Solo muestra respuestas cuyo codigo HTTP este en la lista."
+    why: "Filtrar por 200 o 301 te deja ver rapido lo que existe entre miles de 404."
+    pro: "Por defecto ffuf ya matchea 200-299,301,302,307,401,403,405. -mc all muestra todo."
+
+  "-fc":
+    takes_value: true
+    title: "Filter: codigos de estado a ocultar"
+    what: "Oculta respuestas con esos codigos HTTP."
+    why: "Cuando el servidor responde 403 a todo lo inexistente, -fc 403 limpia el ruido."
+
+  "-fs":
+    takes_value: true
+    title: "Filter: tamaño de respuesta a ocultar"
+    what: "Oculta respuestas cuyo tamaño (en bytes) coincida."
+    why: >-
+      Truco clasico: si todos los 'no existe' pesan 4242 bytes, -fs 4242 los
+      esconde y solo queda lo interesante. Ideal contra apps que devuelven 200
+      siempre (paginas de error 'suaves').
+
+  "-fw":
+    takes_value: true
+    title: "Filter: numero de palabras a ocultar"
+    what: "Oculta respuestas con ese numero de palabras."
+    why: "Alternativa a -fs cuando el tamaño varia pero el conteo de palabras no."
+
+  "-ac":
+    takes_value: false
+    title: "Auto-calibrado"
+    what: "ffuf manda peticiones falsas al inicio para aprender como es un 'no existe' y filtrarlo solo."
+    why: "Te ahorra calcular -fs/-fw a mano. Muy comodo contra respuestas 200 genericas."
+
+  "-recursion":
+    takes_value: false
+    title: "Fuzzing recursivo"
+    what: "Cuando encuentra un directorio, entra y lo fuzzea tambien."
+    why: "Descubre estructuras profundas (/admin -> /admin/backup) sin relanzar a mano."
+    pro: "Controla la profundidad con -recursion-depth N para no dispararte."
+
+  "-c":
+    takes_value: false
+    title: "Salida en color"
+    what: "Colorea los resultados en la terminal."
+    why: "Puramente visual, pero ayuda a distinguir codigos de un vistazo."
+
+  "-t":
+    takes_value: true
+    title: "Numero de hilos (threads)"
+    what: "Cuantas peticiones en paralelo (40 por defecto)."
+    why: "Mas hilos = mas rapido, pero puede tumbar servidores debiles o dispararte rate-limits."
+
+  "-r":
+    takes_value: false
+    title: "Seguir redirecciones"
+    what: "Sigue automaticamente las respuestas 3xx."
+    why: "Util cuando el contenido real esta tras un redirect, pero puede ocultar el 301 en si."

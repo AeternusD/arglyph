@@ -1,0 +1,51 @@
+# Base de conocimiento de gobuster para arglyph.
+# (Stub inicial con lo esencial: buen punto para tu primer aporte a la KB.)
+name: gobuster
+summary: "Fuerza bruta de directorios, DNS y vhosts."
+description: >-
+  Alternativa clasica a ffuf. Se usa por modos: 'dir' (directorios/archivos),
+  'dns' (subdominios) y 'vhost' (virtual hosts).
+url: "https://github.com/OJ/gobuster"
+
+flags:
+  "dir":
+    takes_value: false
+    title: "Modo directorios"
+    what: "Descubre rutas y archivos en un servidor web."
+    why: "El modo mas usado para mapear la superficie de una web."
+
+  "dns":
+    takes_value: false
+    title: "Modo DNS"
+    what: "Enumera subdominios de un dominio."
+    why: "Cada subdominio nuevo es superficie de ataque adicional."
+
+  "-u":
+    takes_value: true
+    title: "URL objetivo"
+    what: "El sitio a atacar en modo dir."
+    why: "Define contra quien corres el diccionario."
+
+  "-d":
+    takes_value: true
+    title: "Dominio objetivo"
+    what: "El dominio base en modo dns."
+    why: "Sobre el se generan los subdominios a probar."
+
+  "-w":
+    takes_value: true
+    title: "Wordlist"
+    what: "Diccionario de palabras a probar."
+    why: "La municion del ataque; sin lista no hay fuerza bruta."
+
+  "-x":
+    takes_value: true
+    title: "Extensiones a probar"
+    what: "Añade extensiones a cada palabra (ej. -x php,txt,html)."
+    why: "Encuentra archivos, no solo carpetas: config.php, backup.txt, etc."
+
+  "-t":
+    takes_value: true
+    title: "Hilos"
+    what: "Peticiones en paralelo (10 por defecto)."
+    why: "Sube la velocidad; cuidado con servidores fragiles."

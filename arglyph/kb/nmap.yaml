@@ -1,0 +1,104 @@
+# Base de conocimiento de nmap para arglyph.
+# Cada flag tiene: title (que es), what (que hace), why (por que lo usarias),
+# pro (nota avanzada, opcional) y takes_value (si consume un valor).
+# 'values' permite notas para valores concretos (ej. -p- => todos los puertos).
+name: nmap
+summary: "Network Mapper: escaner de red, puertos y servicios."
+description: >-
+  Descubre hosts vivos, puertos abiertos, servicios que corren detras y, con
+  scripts, vulnerabilidades. Es casi siempre el primer paso del reconocimiento.
+url: "https://nmap.org/book/man.html"
+
+flags:
+  "-sV":
+    takes_value: false
+    title: "Deteccion de version de servicios"
+    what: >-
+      No solo dice que el puerto 80 esta abierto, sino que interroga al servicio
+      para averiguar que software y version corre (ej. Apache 2.4.52).
+    why: >-
+      La version exacta es lo que te permite buscar CVEs concretos. "Puerto 80
+      abierto" no vale nada; "Apache 2.4.49" te abre la puerta a exploits.
+    pro: >-
+      Combinable con --version-intensity 0-9 para regular cuanto insiste. Alta
+      intensidad = mas ruido y mas fiabilidad.
+
+  "-sC":
+    takes_value: false
+    title: "Scripts por defecto (NSE)"
+    what: >-
+      Ejecuta el set de scripts "default" del Nmap Scripting Engine: banners,
+      certificados, metodos HTTP, shares SMB, etc.
+    why: >-
+      Da contexto gratis con un solo flag. Muchas veces revela rutas, titulos
+      de web o info de dominio que orientan el ataque.
+    pro: "Equivale a --script=default. Para scripts especificos usa --script=<nombre>."
+
+  "-A":
+    takes_value: false
+    title: "Escaneo agresivo"
+    what: "Activa -sV, -sC, deteccion de sistema operativo (-O) y traceroute de golpe."
+    why: "Un 'dame todo' comodo para un primer barrido sin escribir cuatro flags."
+    pro: "Es ruidoso. En entornos con IDS/monitoreo, mejor ir flag por flag."
+
+  "-O":
+    takes_value: false
+    title: "Deteccion de sistema operativo"
+    what: "Intenta adivinar el SO del objetivo por su huella TCP/IP."
+    why: "Saber si es Linux o Windows cambia por completo tu plan de explotacion."
+
+  "-p":
+    takes_value: true
+    title: "Puertos a escanear"
+    what: "Limita el escaneo a los puertos que indiques."
+    why: >-
+      Escanear los 65535 tarda; enfocar unos pocos es rapido. Y a la inversa,
+      -p- asegura que no se te escape un servicio raro en un puerto alto.
+    values:
+      "-": "Los 65535 puertos TCP (escaneo completo)."
+    pro: "Acepta rangos y listas: -p 80,443,8080  o  -p 1-1000  o  -pU:53,T:80 (UDP/TCP)."
+
+  "-sn":
+    takes_value: false
+    title: "Ping scan (sin escaneo de puertos)"
+    what: "Solo comprueba que hosts estan vivos, sin tocar puertos."
+    why: "Para mapear rapido que existe en una red /24 antes de profundizar."
+
+  "-Pn":
+    takes_value: false
+    title: "Tratar todos los hosts como vivos"
+    what: "Se salta el descubrimiento por ping y escanea aunque el host no responda a ping."
+    why: >-
+      Muchos hosts (sobre todo Windows/firewalls) bloquean ICMP y pareceria que
+      estan caidos. -Pn evita que nmap los descarte por error.
+
+  "--min-rate":
+    takes_value: true
+    title: "Tasa minima de paquetes por segundo"
+    what: "Fuerza a nmap a enviar al menos N paquetes/segundo."
+    why: "Acelera escaneos lentos (ej. -p- en un CTF) a costa de mas ruido."
+    pro: "En labs suele ir --min-rate 1000-5000. Contra objetivos reales, con cuidado."
+
+  "-T4":
+    takes_value: false
+    title: "Plantilla de temporizacion 'agresiva'"
+    what: "Ajusta timeouts y paralelismo a un perfil rapido (escala -T0 lento a -T5 loco)."
+    why: "-T4 es el punto dulce en labs: rapido y estable. -T5 puede perder paquetes."
+
+  "-v":
+    takes_value: false
+    title: "Modo verboso"
+    what: "Muestra progreso y hallazgos en tiempo real, sin esperar al final."
+    why: "En escaneos largos, saber que va encontrando evita quedarte a ciegas."
+
+  "-oN":
+    takes_value: true
+    title: "Guardar salida en formato normal"
+    what: "Escribe el resultado legible en el archivo que indiques."
+    why: "Dejar evidencia guardada es la base de cualquier writeup o informe."
+
+  "-oA":
+    takes_value: true
+    title: "Guardar en los tres formatos"
+    what: "Guarda a la vez normal (.nmap), XML (.xml) y grepable (.gnmap) con un prefijo."
+    why: "El XML lo consumen otras herramientas; el grepable es comodo para filtrar con grep."

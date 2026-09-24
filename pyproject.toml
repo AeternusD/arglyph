@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arglyph"
+version = "0.1.0"
+description = "Disecciona comandos ofensivos simbolo por simbolo, desde una base de conocimiento que curas tu."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "Diego Lozano" }]
+keywords = ["cybersecurity", "pentesting", "cli", "education", "nmap", "ffuf"]
+dependencies = ["PyYAML>=6.0"]
+
+[project.urls]
+Homepage = "https://github.com/tu-usuario/arglyph"
+
+# Esto crea el comando `arglyph` en la terminal al instalar.
+[project.scripts]
+arglyph = "arglyph.cli:main"
+
+[tool.setuptools]
+packages = ["arglyph"]
+
+[tool.setuptools.package-data]
+# Empaqueta los YAML de la base de conocimiento junto al codigo.
+arglyph = ["kb/*.yaml"]

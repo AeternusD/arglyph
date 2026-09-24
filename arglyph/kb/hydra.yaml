@@ -1,0 +1,57 @@
+# Base de conocimiento de hydra para arglyph.
+# (Stub inicial: amplialo con mas servicios/flags a medida que los uses.)
+name: hydra
+summary: "Fuerza bruta de credenciales contra servicios de red."
+description: >-
+  Prueba combinaciones de usuario/contraseña contra SSH, FTP, HTTP forms, RDP,
+  y decenas de protocolos mas. La sintaxis del objetivo suele ser: servicio://host.
+url: "https://github.com/vanhauser-thc/thc-hydra"
+
+flags:
+  "-l":
+    takes_value: true
+    title: "Usuario unico"
+    what: "Prueba un solo nombre de usuario."
+    why: "Cuando ya conoces el usuario (ej. admin, root) y solo atacas la contraseña."
+
+  "-L":
+    takes_value: true
+    title: "Lista de usuarios"
+    what: "Diccionario de usuarios a probar (uno por linea)."
+    why: "Cuando no sabes el usuario y quieres enumerar varios."
+
+  "-p":
+    takes_value: true
+    title: "Contraseña unica"
+    what: "Prueba una sola contraseña."
+    why: "Util para 'password spraying' (una clave comun contra muchos usuarios)."
+
+  "-P":
+    takes_value: true
+    title: "Lista de contraseñas"
+    what: "Diccionario de contraseñas (ej. rockyou.txt)."
+    why: "El caso tipico de fuerza bruta de clave."
+
+  "-s":
+    takes_value: true
+    title: "Puerto"
+    what: "Puerto del servicio si no es el estandar."
+    why: "Cuando SSH no esta en 22 o el servicio corre en un puerto raro."
+
+  "-t":
+    takes_value: true
+    title: "Tareas en paralelo"
+    what: "Numero de intentos simultaneos (16 por defecto)."
+    why: "Acelera, pero muchos servicios bloquean/ralentizan ante demasiadas conexiones."
+
+  "-f":
+    takes_value: false
+    title: "Parar al primer acierto"
+    what: "Detiene el ataque en cuanto encuentra una credencial valida."
+    why: "Ahorra tiempo cuando solo necesitas una entrada."
+
+  "-V":
+    takes_value: false
+    title: "Verboso (muestra cada intento)"
+    what: "Imprime cada combinacion usuario:clave que prueba."
+    why: "Para ver el progreso; util aprendiendo, ruidoso en ataques grandes."
