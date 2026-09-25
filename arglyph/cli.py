@@ -4,6 +4,7 @@ Interfaz de linea de comandos de arglyph.
 Subcomandos:
   explain "<comando>"   Disecciona un comando simbolo por simbolo.
   tools                 Lista las herramientas que arglyph sabe explicar.
+  session start/list    Crea y lista sesiones persistentes.
 
 (El subcomando `report`, que ensambla writeups a partir de una sesion, llega
 en la v0.2 y reutilizara el motor de explain.py.)
@@ -12,10 +13,10 @@ import argparse
 import json
 import sys
 
-from . import __version__
+from . import __version__, session
 from .colors import Palette, supports_color
 from .explain import dissect
-from .knowledge import load_kb, known_tools
+from .knowledge import known_tools, load_kb
 
 
 def _print_segments(result: dict, level: str, pal: Palette):
@@ -95,9 +96,28 @@ def cmd_tools(args):
     pal = Palette(supports_color(disable=args.no_color))
     print(pal.bold("Herramientas en la base de conocimiento:"))
     for tool in known_tools(kb):
-        n = len((kb[tool].get("flags") or {}))
+        n = len(kb[tool].get("flags") or {})
         print(f"  {pal.magenta(tool):<20} {pal.gray(str(n) + ' flags documentados')}")
     return 0
+
+
+def cmd_session(args):
+    try:
+        if args.session_cmd == "start":
+            created = session.start(args.name)
+            print(f"Sesion '{created.name}' creada y activa.")
+        else:
+            sessions = session.list_sessions()
+            active = session.current_name()
+            if not sessions:
+                print("No hay sesiones.")
+            for item in sessions:
+                marker = "*" if item.name == active else " "
+                print(f"{marker} {item.name}  {item.created_at}")
+        return 0
+    except (session.SessionError, OSError, UnicodeError) as exc:
+        print(f"Error de sesion: {exc}", file=sys.stderr)
+        return 1
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -132,6 +152,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_tools = sub.add_parser(
         "tools", parents=[common], help="Lista las herramientas conocidas.")
     p_tools.set_defaults(func=cmd_tools)
+
+    p_session = sub.add_parser(
+        "session", parents=[common], help="Gestiona sesiones persistentes.")
+    session_sub = p_session.add_subparsers(dest="session_cmd", required=True)
+    p_start = session_sub.add_parser("start", help="Crea y activa una sesion.")
+    p_start.add_argument("name", help="Nombre de la nueva sesion.")
+    session_sub.add_parser("list", help="Lista sesiones; * marca la activa.")
+    p_session.set_defaults(func=cmd_session)
 
     return parser
 

@@ -14,6 +14,8 @@ Dos fuentes se combinan (la de usuario tiene prioridad):
 
 Asi cualquiera puede extender arglyph sin tocar el codigo del paquete.
 """
+from __future__ import annotations
+
 import os
 from pathlib import Path
 
@@ -59,7 +61,7 @@ def load_kb() -> dict:
     return kb
 
 
-def known_tools(kb: dict = None):
+def known_tools(kb: dict | None = None):
     """Lista de herramientas que arglyph sabe explicar."""
     kb = kb if kb is not None else load_kb()
     return sorted(kb.keys())
