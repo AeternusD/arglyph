@@ -65,9 +65,9 @@ def _resolve_flag(token: str, flags: dict):
     for key in flags:
         if key.startswith("--"):
             continue  # el pegado sin '=' es cosa de flags cortos
-        if token.startswith(key) and len(token) > len(key):
-            if best is None or len(key) > len(best):
-                best = key
+        if (token.startswith(key) and len(token) > len(key)
+                and (best is None or len(key) > len(best))):
+            best = key
     if best is not None:
         value = token[len(best):]
         return best, value, flags[best]
@@ -131,10 +131,10 @@ def dissect(command: str, kb: dict) -> dict:
             # El valor puede venir pegado (-p-) o como token siguiente
             # (--min-rate 1000), pero solo si el flag toma valor.
             value = glued_value
-            if value is None and info.get("takes_value"):
-                if i + 1 < len(tokens) and not tokens[i + 1].startswith("-"):
-                    value = tokens[i + 1]
-                    i += 1
+            if (value is None and info.get("takes_value")
+                    and i + 1 < len(tokens) and not tokens[i + 1].startswith("-")):
+                value = tokens[i + 1]
+                i += 1
 
             # Nota especifica para ciertos valores (ej. -p- => todos los puertos)
             value_note = None

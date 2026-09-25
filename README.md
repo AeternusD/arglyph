@@ -70,6 +70,27 @@ arglyph explain "nmap -sV 10.10.10.5" --json
 arglyph tools
 ```
 
+### Sesiones de laboratorio
+
+```bash
+arglyph session start obsidian
+arglyph session list
+```
+
+`start` crea y activa una sesión; si el nombre ya existe, devuelve un error
+sin modificar su contenido ni la sesión activa. `list` muestra las sesiones
+ordenadas por nombre y marca la activa con `*`.
+
+El estado se conserva entre invocaciones en
+`~/.arglyph/sessions/<nombre>.json` y el nombre activo en `~/.arglyph/current`,
+tanto en Windows como en Linux (`~` es la carpeta personal del usuario).
+Cada JSON incluye `schema_version: 1`, fecha ISO 8601 en UTC y listas vacías
+para comandos, evidencias y notas; su registro llegará en próximos issues.
+
+Los nombres admiten de 1 a 64 letras minúsculas ASCII, números, guiones y
+guiones bajos; deben empezar con letra o número. No se permiten nombres
+reservados de Windows como `con`, `nul` o `com1`.
+
 ## La base de conocimiento (KB)
 
 El corazón de `arglyph`. Cada herramienta es un YAML en `arglyph/kb/`:
